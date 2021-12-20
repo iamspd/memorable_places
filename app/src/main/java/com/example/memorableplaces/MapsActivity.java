@@ -1,8 +1,13 @@
 package com.example.memorableplaces;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -18,6 +23,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+
+    private LocationManager locationManager;
+    private LocationListener listener;
+
+    public void centerMapOnLocation(Location location, String markerTitle){
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(latLng).title(markerTitle));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f));
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +64,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent mainIntent = getIntent();
         int position = mainIntent.getIntExtra("placesNumber", 0);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (position == 0) {
+            // bring user to their location
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            listener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    centerMapOnLocation(location, "Your location");
+                }
+            };
+        }
     }
 }
