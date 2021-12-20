@@ -28,6 +28,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.memorableplaces.databinding.ActivityMapsBinding;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -152,6 +154,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     selectedAddress += addressesList.get(0).getThoroughfare();
                 }
+            }
+
+            if (selectedAddress.equals("")) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm dd-MM-yyyy");
+                selectedAddress = simpleDateFormat.format(new Date());
             }
 
         } catch (IOException e) {
