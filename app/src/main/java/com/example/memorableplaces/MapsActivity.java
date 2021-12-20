@@ -10,6 +10,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,6 +26,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.memorableplaces.databinding.ActivityMapsBinding;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
@@ -131,6 +137,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        mMap.addMarker(new MarkerOptions().position(latLng).title("New Location"));
+
+        String selectedAddress = "";
+
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> addressesList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+
+            if (addressesList != null && addressesList.size() > 0) {
+                if (addressesList.get(0).getThoroughfare() != null) {
+                    if (addressesList.get(0).getSubThoroughfare() != null) {
+                        selectedAddress += addressesList.get(0).getSubThoroughfare();
+                    }
+
+                    selectedAddress += addressesList.get(0).getThoroughfare();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMap.addMarker(new MarkerOptions().position(latLng).title(selectedAddress));
     }
 }
