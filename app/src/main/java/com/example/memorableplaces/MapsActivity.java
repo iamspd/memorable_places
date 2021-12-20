@@ -132,6 +132,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 centerMapOnLocation(lastKnownLocation, "Your location");
             }
+        } else {
+
+            Location locationOnList = new Location(LocationManager.GPS_PROVIDER);
+            locationOnList.setLatitude(MainActivity.locationsArrayList
+                    .get(mainIntent.getIntExtra("placesNumber", 0)).latitude);
+            locationOnList.setLongitude(MainActivity.locationsArrayList
+                    .get(mainIntent.getIntExtra("placesNumber", 0)).longitude);
+
+            centerMapOnLocation(locationOnList, MainActivity.placesArrayList
+                    .get(mainIntent.getIntExtra("placesNumber", 0)));
         }
 
 
@@ -165,5 +175,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
         mMap.addMarker(new MarkerOptions().position(latLng).title(selectedAddress));
+
+        MainActivity.placesArrayList.add(selectedAddress);
+        MainActivity.locationsArrayList.add(latLng);
+
+        Toast.makeText(this, "Location Saved", Toast.LENGTH_SHORT).show();
+
+        MainActivity.arrayAdapter.notifyDataSetChanged();
     }
 }
